@@ -6,34 +6,27 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build_and_deploy:
+  build_image:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14.x"
-
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Angular Project
-        run: ng build --prod
-
-      - name: Docker Build and Publish
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build
+        run: docker build . --file Dockerfile --tag lassoya/enora-front:latest
+      - name: publish
         run: |
-          docker build . --file Dockerfile --tag wnx82/githubangular:latest
           docker login -u wnx82 -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker push wnx82/githubangular:latest
-
-      - name: SSH Deploy
+  deploy_image:
+    needs: build_image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy using ssh
         uses: appleboy/ssh-action@v2
         with:
           host: ${{ secrets.HOST }}
