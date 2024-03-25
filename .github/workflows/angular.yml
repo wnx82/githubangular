@@ -17,7 +17,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: build
-        run: docker build . --file Dockerfile --tag lassoya/enora-front:latest
+        run: docker build . --file Dockerfile --tag wnx82/githubangular:latest
       - name: publish
         run: |
           docker login -u winnux82 -p ${{ secrets.DOCKER_HUB_PWD }}
