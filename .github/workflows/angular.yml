@@ -20,7 +20,7 @@ jobs:
         run: docker build . --file Dockerfile --tag lassoya/enora-front:latest
       - name: publish
         run: |
-          docker login -u winnux82 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker login -u winnux82 -p ${{ secrets.DOCKER_HUB_PWD }}
           docker push wnx82/githubangular:latest
   deploy_image:
     needs: build_image
@@ -34,7 +34,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            docker login -u winnux82 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+            docker login -u winnux82 -p ${{ secrets.DOCKER_HUB_PWD }}
             docker pull wnx82/githubangular:latest
             docker stop githubangular
             docker rm githubangular
